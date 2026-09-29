@@ -1,0 +1,12 @@
+# Runtime & secrets — JANGAN pernah di-commit
+admin_secret
+push_secret
+api_keys.json
+api_keys.json.*
+*.bak
+real_quotas/
+queue/
+real_quota.json
+__pycache__/
+*.pyc
+.DS_Store

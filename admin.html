@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Muse Admin</title>
+<style>
+:root{
+  --bg:#f4f5f7; --card:#ffffff; --line:#e6e8ec; --line2:#d4d9e0;
+  --txt:#14171c; --dim:#5c6572; --faint:#98a0ac;
+  --amber:#f59e0b; --amber-soft:#fef3e2;
+  --green:#16a34a; --green-soft:#e9f7ef;
+  --red:#dc2626; --red-soft:#fdeeee;
+  --ink:#14171c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  max-width:1060px;margin:0 auto;padding:32px 20px 72px}
+::selection{background:#fde9c8}
+
+/* header */
+header{display:flex;align-items:center;gap:16px;margin-bottom:32px;flex-wrap:wrap}
+.brand{font-size:21px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.brand i{width:11px;height:11px;border-radius:50%;background:var(--amber);display:inline-block}
+nav{display:flex;background:#e9ebef;border-radius:999px;padding:4px;gap:2px;margin-left:auto}
+nav button{border:0;background:transparent;padding:9px 18px;border-radius:999px;
+  font-size:13.5px;font-weight:600;color:var(--dim);cursor:pointer}
+nav button.active{background:#fff;color:var(--txt);box-shadow:0 1px 3px rgba(20,23,28,.14)}
+.linkbtn{border:0;background:none;color:var(--dim);font-size:13.5px;font-weight:600;cursor:pointer;padding:9px 6px}
+.linkbtn:hover{color:var(--txt)}
+
+/* pages */
+.page{animation:fade .18s ease}
+[hidden]{display:none!important}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.stat .n{font-size:30px;font-weight:750;letter-spacing:-.02em}
+.stat .n.warn{color:var(--red)}
+.stat .l{font-size:12.5px;color:var(--dim);margin-top:4px}
+
+/* section */
+.sechead{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 14px}
+.sechead h2{font-size:19px;font-weight:700;letter-spacing:-.01em}
+.sechead span{font-size:13px;color:var(--faint)}
+
+/* account cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:14px}
+.acct{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;
+  display:flex;flex-direction:column;gap:13px}
+.acct.disabled{opacity:.62}
+.acct-head{display:flex;align-items:center;gap:10px}
+.acct-name{font-size:16px;font-weight:650;display:flex;align-items:center;gap:9px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex:none}
+.acct.disabled .dot{background:var(--faint)}
+.tag{margin-left:auto;font-size:12px;font-weight:650;padding:4px 11px;border-radius:999px;white-space:nowrap}
+.tag.ok{background:var(--green-soft);color:var(--green)}
+.tag.bad{background:var(--red-soft);color:var(--red)}
+.tag.warn{background:var(--amber-soft);color:#b45309}
+
+.keybox{display:flex;gap:8px;align-items:center;background:#f6f7f9;border:1px solid var(--line);
+  border-radius:10px;padding:7px 7px 7px 13px}
+.keybox code{font:12.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--dim);
+  flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.planrow{display:flex;align-items:center;gap:10px}
+.plan{font-size:14px;font-weight:650}
+.planrow .tag{margin-left:auto}
+
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13.5px}
+.kv .k{color:var(--dim)}
+.kv .v{font-weight:550;text-align:right}
+.stale{color:var(--faint);font-weight:400}
+
+.segbar{height:6px;background:#eceef1;border-radius:99px;overflow:hidden;display:flex}
+.segbar i.done{display:block;height:100%;background:var(--amber);border-radius:99px}
+.segbar i.done.high{background:var(--red)}
+
+.qedit{display:flex;gap:8px}
+.qedit input{flex:1;min-width:0}
+
+.actions{display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid var(--line);padding-top:14px}
+.meta{font-size:12.5px;color:var(--faint)}
+.empty{background:var(--card);border:1px dashed var(--line2);border-radius:14px;
+  padding:40px 24px;text-align:center;color:var(--dim);grid-column:1/-1}
+
+/* forms */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:14px}
+.panel h3{font-size:16px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.panel p.desc{font-size:13.5px;color:var(--dim);margin-bottom:18px}
+label{display:block;font-size:13px;font-weight:600;margin:0 0 7px}
+input[type=text],input[type=number],input[type=password]{
+  width:100%;font:15px/1.4 inherit;color:var(--txt);
+  border:1px solid var(--line2);border-radius:9px;padding:11px 13px;background:#fff}
+input:focus{outline:2px solid #fbd38d;border-color:var(--amber)}
+button{font-size:13.5px;font-weight:600;cursor:pointer;border-radius:9px;
+  padding:10px 16px;border:1px solid var(--line2);background:#fff;color:var(--txt)}
+button:hover{border-color:#b9bfc9;background:#fafbfc}
+button.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary:hover{background:#2b303a;border-color:#2b303a}
+button.danger{color:var(--red);border-color:#f0c0c0}
+button.danger:hover{background:var(--red-soft);border-color:#e89a9a}
+button.small{padding:7px 12px;font-size:12.5px;border-radius:8px}
+button.block{width:100%;padding:13px;font-size:14px}
+.frow{display:grid;grid-template-columns:1fr 160px;gap:10px;margin-bottom:12px}
+.vstack{display:grid;gap:10px;max-width:440px}
+.vstack button{width:100%}
+.hint{font-size:12.5px;color:var(--faint);margin-top:10px}
+.err{color:var(--red);font-size:13px;min-height:20px;margin-top:8px}
+
+/* steps */
+.steps{list-style:none;counter-reset:s;display:grid;gap:14px;margin:4px 0 20px}
+.steps li{counter-increment:s;display:flex;gap:14px;font-size:14px;color:var(--txt)}
+.steps li::before{content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;
+  background:var(--ink);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.steps code{font:12.5px ui-monospace,Menlo,Consolas,monospace;background:#f1f2f5;
+  padding:2px 7px;border-radius:6px;color:#374151;word-break:break-all}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+th,td{text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--dim);font-weight:600}
+td code{font:12.5px ui-monospace,Menlo,monospace;background:#f1f2f5;padding:2px 7px;border-radius:6px}
+
+/* login */
+.loginwrap{min-height:70vh;display:flex;align-items:center;justify-content:center}
+.logincard{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:36px 32px;width:100%;max-width:380px;box-shadow:0 8px 30px rgba(20,23,28,.06)}
+.logincard .brand{margin-bottom:6px}
+.logincard p{font-size:13.5px;color:var(--dim);margin-bottom:20px}
+
+footer{margin-top:40px;font-size:12.5px;color:var(--faint);text-align:center}
+
+@media(max-width:640px){
+  body{padding:20px 14px 56px}
+  .stats{grid-template-columns:1fr 1fr}
+  .frow{grid-template-columns:1fr}
+  header{gap:12px}
+  nav{order:3;width:100%}
+  nav button{flex:1;text-align:center;padding:11px 8px}
+  .keybox{flex-wrap:wrap}
+  .keybox code{flex:1 1 100%;margin-bottom:2px}
+  .panel{padding:20px 18px}
+  .stat .n{font-size:26px}
+}
+</style>
+</head>
+<body>
+
+<div id="login" class="loginwrap">
+  <div class="logincard">
+    <div class="brand"><i></i>Muse</div>
+    <p>Dashboard admin — masukkan password untuk mengelola akun.</p>
+    <label for="tokenInput">Password admin</label>
+    <input type="password" id="tokenInput" placeholder="••••••••" autocomplete="current-password">
+    <div style="height:12px"></div>
+    <button class="primary block" id="loginBtn">Masuk</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header>
+    <div class="brand"><i></i>Muse</div>
+    <nav>
+      <button data-page="akun" class="active">Akun</button>
+      <button data-page="tambah">+ Tambah</button>
+      <button data-page="pengaturan">Pengaturan</button>
+    </nav>
+    <button class="linkbtn" id="logoutBtn">Keluar</button>
+  </header>
+
+  <div class="page" id="page-akun">
+    <div class="stats">
+      <div class="stat"><div class="n" id="stTotal">–</div><div class="l">Total akun</div></div>
+      <div class="stat"><div class="n" id="stActive">–</div><div class="l">Aktif</div></div>
+      <div class="stat"><div class="n" id="stUsed">–</div><div class="l">Request terjawab</div></div>
+      <div class="stat"><div class="n" id="stExh">–</div><div class="l">Limit habis</div></div>
+    </div>
+    <div class="sechead"><h2>Akun</h2><span id="accCount"></span></div>
+    <div class="grid" id="cards"></div>
+  </div>
+
+  <div class="page" id="page-tambah">
+    <div class="sechead"><h2>Tambah akun</h2></div>
+    <div class="panel">
+      <h3>Cara tambah akun</h3>
+      <p class="desc">Satu akun Muse = satu API key. Kuota mengikuti subscription asli akun itu.</p>
+      <ol class="steps">
+        <li><div>Isi nama akun di form bawah, lalu klik <b>Buat akun</b>. Satu API key langsung dibuat untuk akun ini.</div></li>
+        <li><div><b>Prompt reporter otomatis disalin</b> ke clipboard — kirim ke Muse di mesin tempat akun itu login.</div></li>
+        <li><div>Muse di mesin itu akan download reporter, test sekali (<code>reported: 200</code>), lalu pasang cron tiap 30 menit.</div></li>
+        <li><div>Selesai — kuota real akun muncul di dashboard dan ikut mengendalikan limit.</div></li>
+      </ol>
+      <div style="margin:4px 0 20px">
+        <label>Base URL</label>
+        <div class="keybox"><code>https://muse.mfah.me</code>
+          <button class="small" id="copyBase">salin</button></div>
+        <div class="hint">Semua request API dikirim ke base URL ini.</div>
+      </div>
+      <table>
+        <tr><th style="width:130px">Fungsi</th><th>Endpoint</th></tr>
+        <tr><td>Chat</td><td><code>POST /v1/chat/completions</code></td></tr>
+        <tr><td>Model</td><td><code>GET /v1/models</code></td></tr>
+        <tr><td>Kuota real</td><td><code>GET /v1/real-quota</code></td></tr>
+        <tr><td>Lapor kuota</td><td><code>POST /v1/real-quota</code></td></tr>
+      </table>
+    </div>
+    <div class="panel">
+      <h3>Akun baru</h3>
+      <p class="desc">Setelah dibuat, API key dan prompt reporter akan ditampilkan.</p>
+      <div class="frow">
+        <div><label for="newName">Nama akun</label>
+          <input type="text" id="newName" placeholder="cth: Muse Pribadi" maxlength="60"></div>
+        <div><label for="newQuota">Kuota manual <span style="color:var(--faint);font-weight:400">(opsional)</span></label>
+          <input type="number" id="newQuota" placeholder="cth: 10000" min="0"></div>
+      </div>
+      <button class="primary block" id="addBtn">Buat akun</button>
+      <div class="hint">Kosongkan kuota manual kalau mau mengandalkan kuota subscription asli saja.</div>
+    </div>
+  </div>
+
+  <div class="page" id="page-pengaturan">
+    <div class="sechead"><h2>Pengaturan</h2></div>
+    <div class="panel">
+      <h3>Ganti password admin</h3>
+      <p class="desc">Minimal 8 karakter. Setelah diganti, lu harus login ulang.</p>
+      <div class="vstack">
+        <div><label for="newPw">Password baru</label>
+          <input type="password" id="newPw" placeholder="minimal 8 karakter" autocomplete="new-password"></div>
+        <div><label for="newPw2">Ulangi password</label>
+          <input type="password" id="newPw2" placeholder="ulangi password baru" autocomplete="new-password"></div>
+        <button class="primary" id="pwBtn">Ganti password</button>
+      </div>
+    </div>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let token=localStorage.getItem("muse_admin_token")||"";
+const H=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function headers(){return{"Content-Type":"application/json","Authorization":"Bearer "+token}}
+async function api(p,m,b){
+  const r=await fetch("/admin/api"+p,{method:m||"GET",headers:headers(),body:b?JSON.stringify(b):undefined});
+  if(r.status===401)throw new Error("unauth");
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error((j.error&&j.error.message)||("HTTP "+r.status));
+  return j;
+}
+/* page nav */
+function go(p){
+  document.querySelectorAll(".page").forEach(e=>e.hidden=e.id!=="page-"+p);
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));
+  try{localStorage.setItem("muse_admin_page",p)}catch(e){}
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
+function fmtDate(s){if(!s)return"–";try{return new Date(s).toLocaleString("id-ID",{timeZone:"Asia/Jakarta",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}catch(e){return s}}
+function rel(s){if(!s)return"–";const d=(Date.now()-new Date(s).getTime())/1e3;
+  if(d<60)return"baru saja";if(d<3600)return Math.floor(d/60)+" mnt lalu";
+  if(d<86400)return Math.floor(d/3600)+" jam lalu";return Math.floor(d/86400)+" hari lalu"}
+function seg(p){p=Math.max(0,Math.min(100,p));
+  return `<i class="done${p>=90?" high":""}" style="width:${p}%"></i>`}
+
+function reporterPrompt(k){
+return `Tugas: hubungkan akun Muse di mesin ini ke dashboard terpusat.
+
+Konteks: ada bridge di https://muse.mfah.me yang mengelola beberapa akun Muse,
+1 akun = 1 API key. Mesin ini login dengan salah satu akun itu. Tugasmu:
+laporkan kuota subscription akun ini ke bridge setiap 30 menit.
+
+API key akun di mesin ini:
+${k.key}
+
+Langkah:
+1. Download reporter:
+   curl -sO https://muse.mfah.me/admin/report_quota.py
+2. Test sekali:
+   API_KEY=${k.key} python3 report_quota.py
+   Pastikan outputnya "reported: 200". Kalau gagal, cek \`subscription-status
+   status\` jalan atau tidak, diagnosa, lalu laporkan ke gue.
+3. Pasang cron tiap 30 menit (sesuaikan path dengan \`which python3\` dan
+   lokasi file):
+   */30 * * * * API_KEY=${k.key} /usr/bin/python3 /path/lengkap/report_quota.py >> /tmp/report_quota.log 2>&1
+4. Verifikasi: crontab -l
+
+Laporkan kalau beres + output test langkah 2.`;
+}
+
+async function load(){
+  const d=await api("/overview");
+  $("stTotal").textContent=d.total_keys;
+  $("stActive").textContent=d.enabled_keys;
+  $("stUsed").textContent=d.total_used.toLocaleString("id-ID");
+  const ex=d.keys.filter(k=>k.real_quota&&k.real_quota.exhausted).length;
+  $("stExh").textContent=ex;
+  $("stExh").className="n"+(ex?" warn":"");
+  $("foot").textContent="auto-refresh 30 detik · "+new Date().toLocaleTimeString("id-ID",{timeZone:"Asia/Jakarta"})+" WIB";
+  const c=$("cards");c.innerHTML="";
+  if(!d.keys.length)c.innerHTML='<div class="empty">belum ada akun — tambah di halaman <b>+ tambah</b>.</div>';
+  d.keys.forEach(k=>c.appendChild(card(k)));
+}
+
+function card(k){
+  const rq=k.real_quota,exh=rq&&rq.exhausted,stale=rq&&!rq.fresh;
+  const el=document.createElement("div");
+  el.className="acct"+(k.enabled?"":" disabled");
+  el.innerHTML=`
+   <div class="acct-head">
+     <div class="acct-name"><span class="dot"></span>${H(k.name)}</div>
+     <span class="tag ${k.enabled?"ok":"bad"}">${k.enabled?"AKTIF":"NONAKTIF"}</span>
+   </div>
+   <div class="keybox"><code id="key-${k.id}">${H(k.key_masked)}</code>
+     <button data-act="show">tampil</button><button data-act="copy">salin</button></div>
+   ${rq?`
+   <div class="planrow"><span class="plan">${H(rq.plan||"–")}</span>
+     ${exh?'<span class="tag bad">LIMIT HABIS</span>':stale?'<span class="tag warn">DATA BASI</span>':'<span class="tag ok">KUOTA OK</span>'}
+   </div>
+   <div class="kv"><span class="k">weekly limit</span><span class="v">${rq.weekly_used_pct}% terpakai</span></div>
+   <div class="segbar">${seg(rq.weekly_used_pct)}</div>
+   <div class="kv"><span class="k">reset</span><span class="v">${fmtDate(rq.weekly_resets_at)}</span></div>
+   <div class="kv"><span class="k">additional</span><span class="v">${rq.additional_used_pct??"–"}% used</span></div>
+   <div class="kv"><span class="k">update</span><span class="v">${rel(rq.updated_at)}${stale?' <span class="stale">· reporter &gt;3 jam</span>':""}</span></div>
+   `:`<div class="meta">belum ada laporan kuota real — kirim prompt reporter ke Muse di mesin akun ini.</div>`}
+   <div class="kv" style="margin-top:8px"><span class="k">request via bridge</span>
+     <span class="v">${k.used.toLocaleString("id-ID")}${k.quota!=null?" / "+k.quota.toLocaleString("id-ID"):""}</span></div>
+   <div class="qedit">
+     <input type="number" id="q-${k.id}" value="${k.quota??""}" placeholder="kuota manual" min="0">
+     <button data-act="quota">simpan</button>
+   </div>
+   <div class="actions">
+     <button data-act="toggle">${k.enabled?"nonaktifkan":"aktifkan"}</button>
+     <button data-act="reset">reset pakai</button>
+     <button data-act="prompt">prompt reporter</button>
+     <button class="danger" data-act="del">hapus</button>
+   </div>
+   <div class="meta">dibuat ${fmtDate(k.created_at)}${k.last_used_at?" · terakhir dipakai "+rel(k.last_used_at):""}</div>`;
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>act(k,b.dataset.act,el));
+  return el;
+}
+
+async function act(k,a,el){
+  try{
+    if(a==="show"){const c=$("key-"+k.id);
+      if(c.dataset.full){c.textContent=k.key_masked;delete c.dataset.full}
+      else{c.textContent=k.key;c.dataset.full="1"}}
+    else if(a==="copy"){await navigator.clipboard.writeText(k.key);alert("API key disalin")}
+    else if(a==="quota"){const v=$("q-"+k.id).value;
+      await api("/keys/"+k.id,"PATCH",{quota:v===""?null:parseInt(v)});await load()}
+    else if(a==="toggle"){await api("/keys/"+k.id,"PATCH",{enabled:!k.enabled});await load()}
+    else if(a==="reset"){if(confirm("Reset hitungan pemakaian \""+k.name+"\"?"))
+      {await api("/keys/"+k.id+"/reset","POST");await load()}}
+    else if(a==="prompt"){await navigator.clipboard.writeText(reporterPrompt(k));
+      alert("Prompt disalin — kirim ke Muse di mesin akun \""+k.name+"\"")}
+    else if(a==="del"){if(confirm("Hapus akun \""+k.name+"\"? Key-nya langsung mati."))
+      {await api("/keys/"+k.id,"DELETE");await load()}}
+  }catch(e){if(e.message==="unauth")logout();else alert("Gagal: "+e.message)}
+}
+
+async function tryLogin(t){
+  token=t;
+  try{await api("/overview");localStorage.setItem("muse_admin_token",token);
+    $("login").hidden=true;$("app").hidden=false;
+    go(localStorage.getItem("muse_admin_page")||"akun");
+    load();setInterval(load,30000);
+  }catch(e){$("loginErr").textContent="password salah.";token=""}
+}
+function logout(){localStorage.removeItem("muse_admin_token");location.reload()}
+$("loginBtn").onclick=()=>tryLogin($("tokenInput").value.trim());
+$("tokenInput").onkeydown=e=>{if(e.key==="Enter")$("loginBtn").click()};
+$("logoutBtn").onclick=logout;
+$("copyBase").onclick=async()=>{
+  try{await navigator.clipboard.writeText("https://muse.mfah.me");alert("Base URL disalin")}
+  catch(e){alert("Gagal menyalin")}};
+$("addBtn").onclick=async()=>{
+  const name=$("newName").value.trim(),qv=$("newQuota").value;
+  if(!name){alert("Isi nama akun dulu");return}
+  try{
+    const d=await api("/keys","POST",{name,quota:qv===""?null:parseInt(qv)});
+    $("newName").value="";$("newQuota").value="";
+    await navigator.clipboard.writeText(reporterPrompt(d.key));
+    prompt("Akun \""+d.key.name+"\" dibuat.\nPrompt reporter SUDAH disalin otomatis — tinggal kirim ke Muse di mesin akun itu.\nAPI key (salin juga kalau perlu):",d.key.key);
+    go("akun");await load();
+  }catch(e){if(e.message==="unauth")logout();else alert("Gagal: "+e.message)}
+};
+$("pwBtn").onclick=async()=>{
+  const a=$("newPw").value,b=$("newPw2").value;
+  if(a.length<8){alert("Minimal 8 karakter");return}
+  if(a!==b){alert("Password tidak sama");return}
+  if(!confirm("Ganti password admin? Lu harus login ulang."))return;
+  try{await api("/password","POST",{password:a});
+    alert("Password diganti. Login lagi pakai password baru.");
+    logout();
+  }catch(e){if(e.message==="unauth")logout();else alert("Gagal: "+e.message)}
+};
+if(token)tryLogin(token);
+</script>
+</body>
+</html>
